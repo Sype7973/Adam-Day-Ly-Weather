@@ -7,6 +7,11 @@
     <link rel="stylesheet" href="./assets/reset.css">
     <link rel="stylesheet" href="./assets/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <script
+    src="https://cdn.jsdelivr.net/npm/dayjs@1.11.3/dayjs.min.js"
+    integrity="sha256-iu/zLUB+QgISXBLCW/mcDi/rnf4m4uEDO0wauy76x7U="
+    crossorigin="anonymous"
+  ></script>
     <title>Kairosity</title>
 </head>
 <header>
@@ -18,20 +23,21 @@
       <p class="subtitle">
         Your weather information on the go
       </p>
+      <p id="currentDay" class="lead"></p>
     </div>
   </section>
 </header>
 <body>
-  <form>
-  <div class="field has-addons">
+  
+  <div class="field has-addons" id="weather-Search">
     <div class="control">
-      <input class="input ml-1" type="text" placeholder="Choose a City" id="weather-Search">
+      <input class="input ml-1" type="text" placeholder="Choose a City">
     </div>
     <div class="control">
       <a class="button is-info" id="search-Btn">Search</a>
     </div>
   </div>
-  </form>
+
 <section> 
   <div class="box column is-3">
   <ul class="button-memory" id="btn-memory">
