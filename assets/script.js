@@ -2,6 +2,7 @@ var searchButtonEl = $('#search-Btn');
 var weatherforecastResults = $('#weather-forecast');
 var cityTitle = $('#city-heading');
 var cityWeather =$('city-weather')
+var searchedCityHistory = [];
 
 var today = dayjs();
 $('#currentDay').text(today.format('MMM D, YYYY, HH:mm:ss A'));
@@ -20,13 +21,13 @@ updateTime();
 $(searchButtonEl).click(function(event) {
   event.preventDefault();
   var query = $('#weather-Search').val();
-
-  localStorage.setItem('City', query);
 // creates if statement to check if search field is empty
   if (!query) {
     alert('Sorry, You need a real city!');
     return;
   }
+  searchedCityHistory.push(query)
+  localStorage.setItem("City", JSON.stringify(searchedCityHistory));
   getWeather(query);
 });
 
@@ -48,6 +49,13 @@ function getWeather(query){
       console.log(data);
     })
 }
+
+function loadSearchHistory(){
+  searchedCityHistory = JSON.parse(localStorage.getItem('City')) || [];
+  
+}
+loadSearchHistory();
+
 
 //function to create memory button for each saved local storage param
 
