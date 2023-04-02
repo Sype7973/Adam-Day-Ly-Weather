@@ -20,7 +20,7 @@ updateTime();
 // function for search form click
 $(searchButtonEl).click(function(event) {
   event.preventDefault();
-  var query = $('#weather-Search').val();
+  let query = $('#weather-Search').val();
 // creates if statement to check if search field is empty
   if (!query) {
     alert('Sorry, You need a real city!');
@@ -34,7 +34,7 @@ $(searchButtonEl).click(function(event) {
   // create function to take search parameters for city and replace api fetch url - can I splice the original fetch from line 1 or should i create own fetch inside function?
 function getWeather(query){
 
-  var searchedCityApi = 'https://api.openweathermap.org/data/2.5/forecast?q=';
+  let searchedCityApi = 'https://api.openweathermap.org/data/2.5/forecast?q=';
 
   searchedCityApi = searchedCityApi + query + "&appid=65c9e335223e8ff274ce2918fe07a557";
 
@@ -47,9 +47,23 @@ function getWeather(query){
     })
     .then(function (data) {
       console.log(data);
-    })
-}
+    
+  let topHeaderEl = $('#city-heading');
+  topHeaderEl.text("Weather Results for: " + query);
+  cityWeather.append(topHeaderEl);
 
+   for (var i = 0; i < data.list.length; i++) {
+    let currentCityWeather = data.list.main[i].temp;
+    var currentCityWind = data.list.wind;
+    var imgUrl = data.list.weather[i].icon;
+    var currentCityRain = data.list.rain;
+
+    console.log(currentCityWeather);
+    console.log(currentCityWind);
+    console.log(currentCityRain);
+  }
+});
+}
 function loadSearchHistory(){
   searchedCityHistory = JSON.parse(localStorage.getItem('City')) || [];
   
