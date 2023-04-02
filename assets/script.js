@@ -34,34 +34,38 @@ $(searchButtonEl).click(function(event) {
   // create function to take search parameters for city and replace api fetch url - can I splice the original fetch from line 1 or should i create own fetch inside function?
 function getWeather(query){
 
-  let searchedCityApi = 'https://api.openweathermap.org/data/2.5/forecast?q=';
+  let apiKey = "65c9e335223e8ff274ce2918fe07a557";
 
-  searchedCityApi = searchedCityApi + query + "&appid=65c9e335223e8ff274ce2918fe07a557";
+  $.ajax({
+    url: 'https://api.openweathermap.org/data/2.5/forecast?q=' + query + '&appid=' + apiKey,
+    method: 'GET',
+    dataType: 'json',
+    success: function(data) {
+      // Extract necessary data from API response
+      var today = data.list[0];
+      var forecast = data.list.filter(function(item, index) {
+        return index % 8 === 0; // Keep only one forecast per day (every 8th item)
+      });
 
-  fetch(searchedCityApi)
-    .then(function (response) {
-      if (!response.ok) {
-        throw response.json();
-      }
-      return response.json();
-    })
-    .then(function (data) {
-      console.log(data);
-    
-  let topHeaderEl = $('#city-heading');
-  topHeaderEl.text("Weather Results for: " + query);
-  cityWeather.append(topHeaderEl);
+      // Create elements for current day weather
+      var currentIcon = $('<img>').attr('src', 'http://openweathermap.org/img/wn/' + today.weather[0].icon + '.png').addClass('weather-icon');
+      var currentTemp = $('<div>').text(Math.round(today.main.temp - 273.15) + '°C').addClass('weather-temp');
+      var currentDesc = $('<div>').text(today.weather[0].description).addClass('weather-desc');
 
-   for (var i = 0; i < data.list.length; i++) {
-    let currentCityWeather = data.list.main[i].temp;
-    var currentCityWind = data.list.wind;
-    var imgUrl = data.list.weather[i].icon;
-    var currentCityRain = data.list.rain;
+      cityTitle.append(currentIcon, currentTemp, currentDesc);
 
-    console.log(currentCityWeather);
-    console.log(currentCityWind);
-    console.log(currentCityRain);
-  }
+      // Create elements for next 5 days weather
+      forecast.forEach(function(item) {
+        var icon = $('<img>').attr('src', 'http://openweathermap.org/img/wn/' + item.weather[0].icon + '.png').addClass('weather-icon');
+        var temp = $('<div>').text(Math.round(item.main.temp - 273.15) + '°C').addClass('weather-temp');
+        var desc = $('<div>').text(item.weather[0].description).addClass('weather-desc');
+        var date = $('<div>').text(dayjs(item.dt_txt).format('dddd')).addClass('weather-date');
+        weatherforecastResults.append(date, icon, temp, desc);
+      });
+    },
+    error: function(err) {
+      console.log(err);
+    }
 });
 }
 function loadSearchHistory(){
