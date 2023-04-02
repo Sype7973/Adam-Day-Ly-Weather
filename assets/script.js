@@ -1,10 +1,10 @@
-var searchButtonEl = $('#search-Btn');
-var weatherforecastResults = $('#weather-forecast');
-var cityTitle = $('#city-heading');
-var cityWeather =$('city-weather')
-var searchedCityHistory = [];
+let searchButtonEl = $('#search-Btn');
+let weatherforecastResults = $('#weather-forecast');
+let cityTitle = $('#city-heading');
+let cityWeather =$('#city-weather')
+let searchedCityHistory = [];
 
-var today = dayjs();
+let today = dayjs();
 $('#currentDay').text(today.format('MMM D, YYYY, HH:mm:ss A'));
 
 
@@ -29,10 +29,14 @@ $(searchButtonEl).click(function(event) {
   searchedCityHistory.push(query)
   localStorage.setItem("City", JSON.stringify(searchedCityHistory));
   getWeather(query);
+  loadSearchHistory();
 });
 
   // create function to take search parameters for city and replace api fetch url - can I splice the original fetch from line 1 or should i create own fetch inside function?
 function getWeather(query){
+
+  weatherforecastResults.html("");
+  cityTitle.html("");
 
   let apiKey = "65c9e335223e8ff274ce2918fe07a557";
 
@@ -42,24 +46,27 @@ function getWeather(query){
     dataType: 'json',
     success: function(data) {
       // Extract necessary data from API response
-      var today = data.list[0];
-      var forecast = data.list.filter(function(item, index) {
+      let today = data.list[0];
+      let forecast = data.list.filter(function(item, index) {
         return index % 8 === 0; // Keep only one forecast per day (every 8th item)
       });
 
       // Create elements for current day weather
-      var currentIcon = $('<img>').attr('src', 'http://openweathermap.org/img/wn/' + today.weather[0].icon + '.png').addClass('weather-icon');
-      var currentTemp = $('<div>').text(Math.round(today.main.temp - 273.15) + '°C').addClass('weather-temp');
-      var currentDesc = $('<div>').text(today.weather[0].description).addClass('weather-desc');
+      let currentTitle = $('<h2 class = "title" id = weather-header>');
+      currentTitle.text("Today's Weather in " + query);
+      cityTitle.append(currentTitle);
+      let currentIcon = $('<img>').attr('src', 'http://openweathermap.org/img/wn/' + today.weather[0].icon + '.png').addClass('weather-icon');
+      let currentTemp = $('<div>').text(Math.round(today.main.temp - 273.15) + '°C').addClass('weather-temp');
+      let currentDesc = $('<div>').text(today.weather[0].description).addClass('weather-desc');
 
       cityTitle.append(currentIcon, currentTemp, currentDesc);
 
       // Create elements for next 5 days weather
       forecast.forEach(function(item) {
-        var icon = $('<img>').attr('src', 'http://openweathermap.org/img/wn/' + item.weather[0].icon + '.png').addClass('weather-icon');
-        var temp = $('<div>').text(Math.round(item.main.temp - 273.15) + '°C').addClass('weather-temp');
-        var desc = $('<div>').text(item.weather[0].description).addClass('weather-desc');
-        var date = $('<div>').text(dayjs(item.dt_txt).format('dddd')).addClass('weather-date');
+        let icon = $('<img>').attr('src', 'http://openweathermap.org/img/wn/' + item.weather[0].icon + '.png').addClass('weather-icon');
+        let temp = $('<div>').text(Math.round(item.main.temp - 273.15) + '°C').addClass('weather-temp');
+        let desc = $('<div>').text(item.weather[0].description).addClass('weather-desc');
+        let date = $('<div>').text(dayjs(item.dt_txt).format('dddd')).addClass('weather-date');
         weatherforecastResults.append(date, icon, temp, desc);
       });
     },
@@ -70,9 +77,22 @@ function getWeather(query){
 }
 function loadSearchHistory(){
   searchedCityHistory = JSON.parse(localStorage.getItem('City')) || [];
+    // Clear existing buttons
+    $('#btn-memory').empty();
+
+    // Render a button for each city in local storage
+    searchedCityHistory.forEach(function(city) {
+      let button = $('<button>').addClass('city-button').text(city);
+      $('#city-buttons').append(button);
+    });
   
+    // Attach click event to each button to re-open its previous search
+    $('.button-memory').on('click', function() {
+      let city = $(this).text();
+      fetchWeather(city);
+    });
 }
-loadSearchHistory();
+
 
 
 //function to create memory button for each saved local storage param
