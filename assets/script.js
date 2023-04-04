@@ -60,7 +60,7 @@ function getWeather(query){
       let currentDesc = $('<div>').text(today.weather[0].description).addClass('weather-desc');
 
       cityTitle.append(currentIcon, currentTemp, currentDesc);
-
+      
       // Create elements for next 5 days weather
       forecast.forEach(function(item) {
         let icon = $('<img>').attr('src', 'http://openweathermap.org/img/wn/' + item.weather[0].icon + '.png').addClass('weather-icon');
@@ -76,53 +76,26 @@ function getWeather(query){
 });
 }
 function loadSearchHistory(){
-  searchedCityHistory = JSON.parse(localStorage.getItem('City')) || [];
+  let searchedCityHistory = JSON.parse(localStorage.getItem('City')) || [];
     // Clear existing buttons
     $('#btn-memory').empty();
 
     // Render a button for each city in local storage
     searchedCityHistory.forEach(function(city) {
-      let button = $('<button>').addClass('city-button').text(city);
-      $('#city-buttons').append(button);
-    });
-  
-    // Attach click event to each button to re-open its previous search
-    $('.button-memory').on('click', function() {
-      let city = $(this).text();
-      fetchWeather(city);
+      let button = $('<button>').addClass('city-button button column is-primary is-large buttons are-medium').text(city);
+      $('#btn-memory').append(button);
     });
 }
+// Attach click event to each button to re-open its previous search
+$('#btn-memory').on('click', function(event) {
+  console.log(event.target)
+  let city = $(event.target).text();
+  console.log(this);
+  loadSearchHistory();
+  getWeather(city);
+});
 
 
+// clear buttons function
 
-//function to create memory button for each saved local storage param
-
-
-// render results and add elements based on weather condition
-
-
-// function renderWeather(weatherDailyForecast)
-
-//   var resultCard = document.createElement('div');
-
-//   var resultBody = document.createElement('div');
-//   resultCard.append(resultBody);
-
-//   var titleEl = document.createElement('h3');
-//   titleEl.textContent = weatherDailyForecast.title;
-
-// // need to create a function for the main card, targeting Bulma ids: city-heading, city-weather, weather-forecast
-
-// var startDate = dayjs().add(1, 'day').startOf('day').unix();
-
-// var endDate = dayjs().add(6, 'day').startOf('day').unix();
-
-// if (weatherDailyForecast[i].dt >= startDate && weatherDailyForecast[i].dt <endDate){
-
-// if (weatherDailyForecast[i].dt_txt.slice(11, 13) == "12") {
-
-//  renderWeather(weatherDailyForecast[i]);
-
-// }
-// }
-// }
+// Wrong input function
