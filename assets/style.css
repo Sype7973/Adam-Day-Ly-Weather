@@ -1,18 +1,11 @@
+#weather-forecast-content{
+  border: 3.4px;
+  border-style: solid;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: larger;
+}
 
-
-
-
-@media screen and (max-width: 992px) {
-    .card {
-      width: 50%;
-  
-    }
-  }
-  
-  
-@media screen and (max-width: 768px) {
-    .card {
-      width: 100%;
-    }
-
-  }
+#forecast-results{
+  position: absolute;
+}

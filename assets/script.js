@@ -63,11 +63,16 @@ function getWeather(query){
       
       // Create elements for next 5 days weather
       forecast.forEach(function(item) {
+        var weatherCard = $('<div class = "content" id = weather-forecast-content>');
+        weatherforecastResults.append(weatherCard);
         let icon = $('<img>').attr('src', 'http://openweathermap.org/img/wn/' + item.weather[0].icon + '.png').addClass('weather-icon');
+        weatherCard.append(icon);
         let temp = $('<div>').text(Math.round(item.main.temp - 273.15) + '°C').addClass('weather-temp');
+        weatherCard.append(temp);
         let desc = $('<div>').text(item.weather[0].description).addClass('weather-desc');
+        weatherCard.append(desc);
         let date = $('<div>').text(dayjs(item.dt_txt).format('dddd')).addClass('weather-date');
-        weatherforecastResults.append(date, icon, temp, desc);
+        weatherCard.append(date);
       });
     },
     error: function(err) {
@@ -88,6 +93,7 @@ function loadSearchHistory(){
 }
 // Attach click event to each button to re-open its previous search
 $('#btn-memory').on('click', function(event) {
+  event.preventDefault();
   console.log(event.target)
   let city = $(event.target).text();
   console.log(this);
@@ -96,6 +102,13 @@ $('#btn-memory').on('click', function(event) {
 });
 
 
-// clear buttons function
+// clear search function
+$('#clear-search').click(function(event) {
+  event.preventDefault();
+  localStorage.clear();
+  $('#btn-memory').empty();
+  weatherforecastResults.html("");
+  cityTitle.html("");
+});
 
 // Wrong input function
