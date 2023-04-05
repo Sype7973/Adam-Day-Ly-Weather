@@ -3,6 +3,8 @@ let weatherforecastResults = $('#weather-forecast');
 let cityTitle = $('#city-heading');
 let cityWeather =$('#city-weather')
 let searchedCityHistory = [];
+const apiKey = "65c9e335223e8ff274ce2918fe07a557";
+
 
 let today = dayjs();
 $('#currentDay').text(today.format('MMM D, YYYY, HH:mm:ss A'));
@@ -26,10 +28,12 @@ $(searchButtonEl).click(function(event) {
     alert('Sorry, you need to put in a city name!');
     return;
   }
+  
   searchedCityHistory.push(query)
   localStorage.setItem("City", JSON.stringify(searchedCityHistory));
   getWeather(query);
-  loadSearchHistory();
+  loadSearchHistory(query);
+  
 });
 
   // create function to take search parameters for city and replace api fetch url - can I splice the original fetch from line 1 or should i create own fetch inside function?
@@ -38,7 +42,7 @@ function getWeather(query){
   weatherforecastResults.html("");
   cityTitle.html("");
 
-  let apiKey = "65c9e335223e8ff274ce2918fe07a557";
+ 
 
   $.ajax({
     url: 'https://api.openweathermap.org/data/2.5/forecast?q=' + query + '&appid=' + apiKey,
@@ -53,15 +57,19 @@ function getWeather(query){
 
       // Create elements for current day weather
       let currentTitle = $('<h2 class = "title" id = weather-header>');
-      currentTitle.text("Today's Weather in " + query);
+      currentTitle.text("Today's Current Weather in " + query);
       cityTitle.append(currentTitle);
+      var titleWeatherCard = $('<div class = "content" id = main-forecast-content>');
       let currentIcon = $('<img>').attr('src', 'http://openweathermap.org/img/wn/' + today.weather[0].icon + '.png').addClass('weather-icon');
+      titleWeatherCard.append(currentIcon);
       let currentTemp = $('<div>').text(Math.round(today.main.temp - 273.15) + '°C').addClass('weather-temp');
+      titleWeatherCard.append(currentTemp);
       let currentDesc = $('<div>').text(today.weather[0].description).addClass('weather-desc');
+      titleWeatherCard.append(currentDesc);
       let currentWind = $('<div>').text("Wind Speed: " + today.wind.speed + " m/s").addClass('weather-wind');
-      cityTitle.append(currentWind);
+      titleWeatherCard.append(currentWind);
+      cityTitle.append(titleWeatherCard);
       
-      cityTitle.append(currentIcon, currentTemp, currentDesc);
       
       // Create elements for next 5 days weather
       forecast.forEach(function(item) {
@@ -69,18 +77,21 @@ function getWeather(query){
         weatherforecastResults.append(weatherCard);
         let icon = $('<img>').attr('src', 'http://openweathermap.org/img/wn/' + item.weather[0].icon + '.png').addClass('weather-icon');
         weatherCard.append(icon);
+        let date = $('<div>').text(dayjs(item.dt_txt).format('dddd')).addClass('weather-date');
+        weatherCard.append(date);
         let temp = $('<div>').text(Math.round(item.main.temp - 273.15) + '°C').addClass('weather-temp');
         weatherCard.append(temp);
         let desc = $('<div>').text(item.weather[0].description).addClass('weather-desc');
         weatherCard.append(desc);
-        let date = $('<div>').text(dayjs(item.dt_txt).format('dddd')).addClass('weather-date');
-        weatherCard.append(date);
         let windSpeed = $('<div>').text("Wind Speed: " + item.wind.speed + " m/s").addClass('weather-wind');
         weatherCard.append(windSpeed);
       });
     },
-    error: function(err) {
-      console.log(err);
+    error: function(jqxHR, textStatus, errorthrown) {
+      // Alert if city doesn't exist on OpenWeather API
+      if (jqxHR.status === 404) {
+        alert('City not found on OpenWeather API');
+      }
     }
 });
 }
@@ -88,13 +99,14 @@ function loadSearchHistory(){
   let searchedCityHistory = JSON.parse(localStorage.getItem('City')) || [];
     // Clear existing buttons
     $('#btn-memory').empty();
-
     // Render a button for each city in local storage
     searchedCityHistory.forEach(function(city) {
       let button = $('<button>').addClass('city-button button column is-primary is-large buttons are-medium').text(city);
       $('#btn-memory').append(button);
+    
     });
-}
+  }
+
 // Attach click event to each button to re-open its previous search
 $('#btn-memory').on('click', function(event) {
   event.stopPropagation();
@@ -107,11 +119,14 @@ $('#btn-memory').on('click', function(event) {
 
 // clear search function
 $('#clear-search').click(function(event) {
-  event.preventDefault();
+  event.stopPropagation();
   localStorage.clear();
   $('#btn-memory').empty();
+  searchedCityHistory = [];
   weatherforecastResults.html("");
   cityTitle.html("");
 });
+
+
 
 // Wrong input function

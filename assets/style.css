@@ -3,9 +3,17 @@
   border-style: solid;
   padding: 10px;
   border-radius: 10px;
-  font-size: larger;
+  font-size: 30px;
 }
 
 #forecast-results{
   position: absolute;
+}
+
+#main-forecast-content{
+  border: 3.4px;
+  border-style: solid;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: larger;
 }
