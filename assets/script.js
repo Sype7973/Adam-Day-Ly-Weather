@@ -23,7 +23,7 @@ $(searchButtonEl).click(function(event) {
   let query = $('#weather-Search').val();
 // creates if statement to check if search field is empty
   if (!query) {
-    alert('Sorry, You need a real city!');
+    alert('Sorry, you need to put in a city name!');
     return;
   }
   searchedCityHistory.push(query)
@@ -48,7 +48,7 @@ function getWeather(query){
       // Extract necessary data from API response
       let today = data.list[0];
       let forecast = data.list.filter(function(item, index) {
-        return index % 8 === 0; // Keep only one forecast per day (every 8th item)
+        return (index + 1) % 8 === 0 // Keep only one forecast per day (every 8th item)
       });
 
       // Create elements for current day weather
@@ -58,7 +58,9 @@ function getWeather(query){
       let currentIcon = $('<img>').attr('src', 'http://openweathermap.org/img/wn/' + today.weather[0].icon + '.png').addClass('weather-icon');
       let currentTemp = $('<div>').text(Math.round(today.main.temp - 273.15) + '°C').addClass('weather-temp');
       let currentDesc = $('<div>').text(today.weather[0].description).addClass('weather-desc');
-
+      let currentWind = $('<div>').text("Wind Speed: " + today.wind.speed + " m/s").addClass('weather-wind');
+      cityTitle.append(currentWind);
+      
       cityTitle.append(currentIcon, currentTemp, currentDesc);
       
       // Create elements for next 5 days weather
@@ -73,6 +75,8 @@ function getWeather(query){
         weatherCard.append(desc);
         let date = $('<div>').text(dayjs(item.dt_txt).format('dddd')).addClass('weather-date');
         weatherCard.append(date);
+        let windSpeed = $('<div>').text("Wind Speed: " + item.wind.speed + " m/s").addClass('weather-wind');
+        weatherCard.append(windSpeed);
       });
     },
     error: function(err) {
@@ -93,11 +97,10 @@ function loadSearchHistory(){
 }
 // Attach click event to each button to re-open its previous search
 $('#btn-memory').on('click', function(event) {
-  event.preventDefault();
+  event.stopPropagation();
   console.log(event.target)
   let city = $(event.target).text();
   console.log(this);
-  loadSearchHistory();
   getWeather(city);
 });
 
