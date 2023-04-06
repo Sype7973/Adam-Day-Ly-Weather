@@ -5,18 +5,16 @@ let cityWeather =$('#city-weather')
 let searchedCityHistory = [];
 const apiKey = "65c9e335223e8ff274ce2918fe07a557";
 
-
+// dayjs time function
 let today = dayjs();
 $('#currentDay').text(today.format('MMM D, YYYY, HH:mm:ss A'));
 
-
+// clock function
 function updateTime() {
   setTimeout(updateTime, 1000);
   today = dayjs();
   $('#currentDay').text(today.format('MMM D, YYYY, HH:mm:ss A'))
 }
-
-updateTime();
 
 
 // function for search form click
@@ -28,27 +26,23 @@ $(searchButtonEl).click(function(event) {
     alert('Sorry, you need to put in a city name!');
     return;
   }
-  
-  searchedCityHistory.push(query)
-  localStorage.setItem("City", JSON.stringify(searchedCityHistory));
   getWeather(query);
-  loadSearchHistory(query);
-  
 });
 
-  // create function to take search parameters for city and replace api fetch url - can I splice the original fetch from line 1 or should i create own fetch inside function?
+  // function to get weather data from API
 function getWeather(query){
 
   weatherforecastResults.html("");
   cityTitle.html("");
 
  
-
   $.ajax({
     url: 'https://api.openweathermap.org/data/2.5/forecast?q=' + query + '&appid=' + apiKey,
     method: 'GET',
     dataType: 'json',
     success: function(data) {
+     
+        
       // Extract necessary data from API response
       let today = data.list[0];
       let forecast = data.list.filter(function(item, index) {
@@ -86,15 +80,21 @@ function getWeather(query){
         let windSpeed = $('<div>').text("Wind Speed: " + item.wind.speed + " m/s").addClass('weather-wind');
         weatherCard.append(windSpeed);
       });
+      searchedCityHistory.push(query);
+      localStorage.setItem("City", JSON.stringify(searchedCityHistory));
+      loadSearchHistory(query);
     },
     error: function(jqxHR, textStatus, errorthrown) {
       // Alert if city doesn't exist on OpenWeather API
       if (jqxHR.status === 404) {
-        alert('City not found on OpenWeather API');
-      }
+        alert('Sorry that isn\'t a valid city name!');
+        searchedCityHistory.pop();
+        localStorage.setItem("City", JSON.stringify(searchedCityHistory));
+      } 
     }
 });
 }
+// function to load search history
 function loadSearchHistory(){
   let searchedCityHistory = JSON.parse(localStorage.getItem('City')) || [];
     // Clear existing buttons
@@ -127,6 +127,4 @@ $('#clear-search').click(function(event) {
   cityTitle.html("");
 });
 
-
-
-// Wrong input function
+updateTime();
