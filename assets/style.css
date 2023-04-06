@@ -4,6 +4,7 @@
   padding: 10px;
   border-radius: 10px;
   font-size: 30px;
+  font-family: 'Quicksand', sans-serif;
 }
 
 #forecast-results{
@@ -16,4 +17,22 @@
   padding: 10px;
   border-radius: 10px;
   font-size: larger;
+  font-family: 'Quicksand', sans-serif;
+}
+.hero-body{
+  font-family: 'Quicksand', sans-serif;
+  font-size: larger;
+}
+
+#weather-search{
+  font-size: larger;
+  font-family: 'Quicksand', sans-serif;
+}
+.city-button{
+  margin-bottom: 20px;
+}
+
+.weather-date{
+  font-weight: bolder;
+  color: hsl(48, 100%, 67%)
 }
